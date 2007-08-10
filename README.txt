@@ -1,11 +1,32 @@
 Author: Pierre Andrews
 Version: 1.0
 Release: 10 August 2007
+URL: http://6v8.gamboni.org/Move-Rename-Images-according-to.html
+License: GPL
+
+======================================================================
 
 This is an Automator action (for Apple Automator.app) that takes a list of images as input and will move them according to a special pattern which can contain EXIF data.
 
 You will need to install:
 http://www.sno.phy.queensu.ca/~phil/exiftool/install.html#OSX
+
+Install the action file in ~/Library/Automator/ or /Library/Automator
+
+In the current version, if a file with the same path already exist, the auto mover will erase it. So be careful. This is in the TODO list.
+
+======================================================================
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+----------------------------------------------------------------------
 
 For example, if you have a bunch of images that you want to move in directories named from the date they were taken, like:
 2007
