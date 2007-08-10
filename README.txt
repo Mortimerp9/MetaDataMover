@@ -2,7 +2,10 @@ Author: Pierre Andrews
 Version: 1.0
 Release: 10 August 2007
 
-this is an Automator action (for Apple Automator.app) that takes a list of images as input and will move them according to a special pattern which can contain EXIF data.
+This is an Automator action (for Apple Automator.app) that takes a list of images as input and will move them according to a special pattern which can contain EXIF data.
+
+You will need to install:
+http://www.sno.phy.queensu.ca/~phil/exiftool/install.html#OSX
 
 For example, if you have a bunch of images that you want to move in directories named from the date they were taken, like:
 2007

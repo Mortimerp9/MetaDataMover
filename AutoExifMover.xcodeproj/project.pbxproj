@@ -24,6 +24,8 @@
 		65AABA19056A9B5C006CE269 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/main.nib; sourceTree = "<group>"; };
 		65AABA78056AB2A5006CE269 /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = /System/Library/Frameworks/Automator.framework; sourceTree = "<absolute>"; };
 		B4BFE1BE07F3472F00449807 /* main.command */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = main.command; sourceTree = "<group>"; };
+		B68421580C6CA73F00966DBA /* French */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = French; path = French.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B68421600C6CA9EC00966DBA /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/main.nib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +183,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				089C167EFE841241C02AAC07 /* English */,
+				B68421580C6CA73F00966DBA /* French */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -189,6 +192,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				65AABA19056A9B5C006CE269 /* English */,
+				B68421600C6CA9EC00966DBA /* French */,
 			);
 			name = main.nib;
 			sourceTree = "<group>";

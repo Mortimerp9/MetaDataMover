@@ -7,20 +7,13 @@ AMName = "AutoExifMover";
 /*  AMApplication localized strings  */
 "Terminal" = "Terminal";
 
-/*  AMCategory localized strings  */
-/* e.g. "Terminal" = "Terminal"; */
-
-/*  AMDefaultParameters localized values  */
-/*  e.g. myDefaultIntegerParameter = 0;  */
-/*  e.g. myDefaultStringParameter = "Default String Value";  */
 
 /*  AMDescription localized strings  */
 AMDInput = "Les fichiers à déplacer/renomer, un par ligne.";
 AMDRequires="EXIF:Tool et UFRaw doivent être installés.";
 AMDResult = "Les fichiers déplacés, un par ligne.";
 AMDSummary = "Prend des photos en entrée et les déplace/renome en fonction d'un modèle de chemin et des données EXIF (date, heure, etc...) .";
-/*  AMKeyword localized strings  */
-/* e.g. "Filter" = "Filter"; */
+
 
 /*  AMWarning localized strings  */
 ApplyButton = "Ajouter";
