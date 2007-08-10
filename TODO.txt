@@ -1,0 +1,2 @@
+- add verification that the file doesn't already exist from a previous run (the :cnt: is only safe in that particular run)
+- do not replace the ' ' with '_' everywhere
