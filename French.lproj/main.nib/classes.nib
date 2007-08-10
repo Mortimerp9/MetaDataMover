@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {completed = id; run = id; runNext = id; stop = id; }; 
+            CLASS = AMAction; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = AMBundleAction; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {view = NSView; }; 
+            SUPERCLASS = AMAction; 
+        }, 
+        {CLASS = AMShellScriptAction; LANGUAGE = ObjC; SUPERCLASS = AMBundleAction; }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}
