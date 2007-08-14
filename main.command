@@ -19,13 +19,14 @@ while(<>) {
 	$cnt++;
 	chomp;
 	
+	if(-e $_) {
     my $exifTool = new Image::ExifTool;
 	my $pattern = $ENV{'pathPattern'};
 	if(!$pattern) {
 		$pattern = "%Y_%m_%d/";
 	}
 	$exifTool->Options(DateFormat => $pattern);
-		
+			
 	my $file = $_;
 	my $name;
 	my $dir;
@@ -34,8 +35,11 @@ while(<>) {
 	($name,$dir,$suffix) = fileparse($file,qr/\.[^.]*$/);
 	my $destPath = $ENV{'directoryPath'};
 	if(!$destPath) { $destPath = $dir; }
-    my $info = $exifTool->ImageInfo($_, 'DateTimeOriginal');
+    my $info = $exifTool->ImageInfo($file, 'DateTimeOriginal');
 	my $path = $$info{'DateTimeOriginal'};
+	if(!$path) {
+		$path = $pattern;
+	}
 	while($path =~ /:([a-zA-Z]+):/g) {
 		if($1 =~ /basename/i) {
 			$with_basename=true;
@@ -56,8 +60,8 @@ while(<>) {
 			}
 		}
 	}
-	$path = $destPath.'/'.$path;
 	$path =~ s/[^A-Za-z0-9_\/.-~]/_/g;
+	$path = $destPath.'/'.$path;
 	
 	$homedir=`ksh -c "(cd ~ 2>/dev/null && /bin/pwd)"`; 
 	chomp($homedir);
@@ -76,7 +80,20 @@ while(<>) {
 		$path .= $suffix;
 	}
 	
-	mkpath($new_dir);
-	move($file,$path);
+	if(!$ENV{'test'}) { mkpath($new_dir); }
+	if(-e $path) {
+	   my $local_cnt = 1;
+	   $new_path = $path;
+	   $new_path =~ s/(\.[^.]*)$/_$local_cnt$1/;
+	   while(-e $new_path) {
+		$local_cnt++;
+		$new_path = $path;
+		$new_path =~ s/(\.[^.]*)$/_$local_cnt$1/;
+	   }
+	   $path = $new_path;
+	}
+	
+	if(!$ENV{'test'}) {move($file,$path);}
 	print $path."\n";
+	}
 }
