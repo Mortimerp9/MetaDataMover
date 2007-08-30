@@ -12,6 +12,7 @@
 		65081C37067A9A0C006247A1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 		65081C38067A9A0C006247A1 /* Automator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AABA78056AB2A5006CE269 /* Automator.framework */; };
 		B4BFE1BF07F3472F00449807 /* main.command in Resources */ = {isa = PBXBuildFile; fileRef = B4BFE1BE07F3472F00449807 /* main.command */; };
+		B66EA57C0C8767D100D01E12 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = B66EA51D0C8767D100D01E12 /* lib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		65AABA19056A9B5C006CE269 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/main.nib; sourceTree = "<group>"; };
 		65AABA78056AB2A5006CE269 /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = /System/Library/Frameworks/Automator.framework; sourceTree = "<absolute>"; };
 		B4BFE1BE07F3472F00449807 /* main.command */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = main.command; sourceTree = "<group>"; };
+		B66EA51D0C8767D100D01E12 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
 		B68421580C6CA73F00966DBA /* French */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = French; path = French.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B68421600C6CA9EC00966DBA /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/main.nib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -91,6 +93,7 @@
 		1058C7AEFEA557BF11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B66EA51D0C8767D100D01E12 /* lib */,
 				089C1672FE841209C02AAC07 /* Foundation.framework */,
 				089C167FFE841241C02AAC07 /* AppKit.framework */,
 			);
@@ -157,6 +160,7 @@
 				65081C32067A9A0C006247A1 /* InfoPlist.strings in Resources */,
 				65081C33067A9A0C006247A1 /* main.nib in Resources */,
 				B4BFE1BF07F3472F00449807 /* main.command in Resources */,
+				B66EA57C0C8767D100D01E12 /* lib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,7 +6,16 @@
 #  Created by Pierre Andrews on 01/07/2007.
 #  Copyright 2007 Pierre Andrews. All rights reserved.
 
-use lib "/usr/bin/lib/";
+#use lib "/usr/bin/lib/";
+
+# add our 'lib' directory to the include list BEFORE 'use Image::ExifTool'
+my $exeDir;
+BEGIN {
+    # get exe directory
+    $exeDir = ($0 =~ /(.*)[\\\/]/) ? $1 : '.';
+    # add lib directory at start of include path
+    unshift @INC, "$exeDir/lib";
+}
 
 use Image::ExifTool;
 use File::Path;
@@ -78,24 +87,32 @@ while(<>) {
 			}
 			
 			if(!$ENV{'test'}) { mkpath($new_dir); }
-			if(-e $path) {
-				if($path !~ /:cnt:/i) {
-					$path =~ s/(\.[^.]*)$/_:cnt:$1/;
-				}
-				my $local_cnt = 1;
-				$new_path = $path;
-				$new_path =~ s/:cnt:/$local_cnt/g;
-				while(-e $new_path) {
-					$local_cnt++;
+			if(!$ENV{'overwrite'}) {
+				if(-e $path) {
+					if($path !~ /:cnt:/i) {
+						$path =~ s/(\.[^.]*)$/_:cnt:$1/;
+					}
+					my $local_cnt = 1;
 					$new_path = $path;
 					$new_path =~ s/:cnt:/$local_cnt/g;
+					while(-e $new_path) {
+						$local_cnt++;
+						$new_path = $path;
+						$new_path =~ s/:cnt:/$local_cnt/g;
+					}
+					$path = $new_path;
 				}
-				$path = $new_path;
+				$path =~ s/_+/_/g;
+				$path =~ s/_:cnt://g;
 			}
-			$path =~ s/_+/_/g;
-			$path =~ s/_:cnt://g;
-			
-			if(!$ENV{'test'}) {move($file,$path);}
+
+			if(!$ENV{'test'}) {
+				if($ENV{'action'} == 'move') {
+					move($file,$path);
+				} else {
+					copy($file,$path);
+				}
+			}
 			print $path."\n";
 		}
 	}
