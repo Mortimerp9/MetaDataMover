@@ -107,7 +107,7 @@ while(<>) {
 			}
 
 			if(!$ENV{'test'}) {
-				if($ENV{'action'} == 'move') {
+				if($ENV{'action'} == 1) {
 					move($file,$path);
 				} else {
 					copy($file,$path);
