@@ -21,7 +21,7 @@
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		65081C3A067A9A0C006247A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
-		65081C3B067A9A0C006247A1 /* AutoExifMover.action */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AutoExifMover.action; sourceTree = BUILT_PRODUCTS_DIR; };
+		65081C3B067A9A0C006247A1 /* MetaDataMover.action */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetaDataMover.action; sourceTree = BUILT_PRODUCTS_DIR; };
 		65AABA19056A9B5C006CE269 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/main.nib; sourceTree = "<group>"; };
 		65AABA78056AB2A5006CE269 /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = /System/Library/Frameworks/Automator.framework; sourceTree = "<absolute>"; };
 		B4BFE1BE07F3472F00449807 /* main.command */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = main.command; sourceTree = "<group>"; };
@@ -105,7 +105,7 @@
 		19C28FB8FE9D52D311CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				65081C3B067A9A0C006247A1 /* AutoExifMover.action */,
+				65081C3B067A9A0C006247A1 /* MetaDataMover.action */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,9 +121,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		65081C2D067A9A0C006247A1 /* AutoExifMover */ = {
+		65081C2D067A9A0C006247A1 /* MetaDataMover */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4E59BCAA08A8249B001206A8 /* Build configuration list for PBXNativeTarget "AutoExifMover" */;
+			buildConfigurationList = 4E59BCAA08A8249B001206A8 /* Build configuration list for PBXNativeTarget "MetaDataMover" */;
 			buildPhases = (
 				65081C31067A9A0C006247A1 /* Resources */,
 				65081C36067A9A0C006247A1 /* Frameworks */,
@@ -133,10 +133,10 @@
 			);
 			dependencies = (
 			);
-			name = AutoExifMover;
+			name = MetaDataMover;
 			productInstallPath = "$(USER_LIBRARY_DIR)/Automator";
 			productName = "Automator Action";
-			productReference = 65081C3B067A9A0C006247A1 /* AutoExifMover.action */;
+			productReference = 65081C3B067A9A0C006247A1 /* MetaDataMover.action */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -144,7 +144,7 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 4E59BCAE08A8249B001206A8 /* Build configuration list for PBXProject "AutoExifMover" */;
+			buildConfigurationList = 4E59BCAE08A8249B001206A8 /* Build configuration list for PBXProject "MetaDataMover" */;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -156,7 +156,7 @@
 			mainGroup = 089C166AFE841209C02AAC07 /* Automator Action */;
 			projectDirPath = "";
 			targets = (
-				65081C2D067A9A0C006247A1 /* AutoExifMover */,
+				65081C2D067A9A0C006247A1 /* MetaDataMover */,
 			);
 		};
 /* End PBXProject section */
@@ -226,7 +226,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Automator";
 				OTHER_OSAFLAGS = "-x -t 0 -c 0";
-				PRODUCT_NAME = AutoExifMover;
+				PRODUCT_NAME = MetaDataMover;
 				WRAPPER_EXTENSION = action;
 				ZERO_LINK = YES;
 			};
@@ -244,7 +244,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Automator";
 				OTHER_OSAFLAGS = "-x";
-				PRODUCT_NAME = AutoExifMover;
+				PRODUCT_NAME = MetaDataMover;
 				WRAPPER_EXTENSION = action;
 			};
 			name = Release;
@@ -272,7 +272,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4E59BCAA08A8249B001206A8 /* Build configuration list for PBXNativeTarget "AutoExifMover" */ = {
+		4E59BCAA08A8249B001206A8 /* Build configuration list for PBXNativeTarget "MetaDataMover" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4E59BCAB08A8249B001206A8 /* Debug */,
@@ -281,7 +281,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4E59BCAE08A8249B001206A8 /* Build configuration list for PBXProject "AutoExifMover" */ = {
+		4E59BCAE08A8249B001206A8 /* Build configuration list for PBXProject "MetaDataMover" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4E59BCAF08A8249B001206A8 /* Debug */,
