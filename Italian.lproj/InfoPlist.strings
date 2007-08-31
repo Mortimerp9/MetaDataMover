@@ -1,0 +1,19 @@
+/* Localized versions of Info.plist keys */
+
+NSHumanReadableCopyright = "Copyright 2007 Pierre Andrews. GPL License";
+
+AMName = "MetaDataMover";
+
+/*  AMApplication localized strings  */
+"Terminal" = "Terminal";
+
+/*  AMDescription localized strings  */
+AMDInput = "Uno o piu' file (uno per riga) da copiare/spostare";
+AMDRequires="";
+AMDResult = "I file spostati (nella nuova posizione), uno per riga";
+AMDSummary = "Prende i file con metadata (EXIF, ID3, ...) e usa EXIFtool per spostarli in sottocartelle in base a un pattern specificato usando i metadata del file.";
+
+/*  AMWarning localized strings  */
+ApplyButton = "Aggiungi";
+IgnoreButton = "Non aggiungere";
+Message = "Messaggio di avviso.";

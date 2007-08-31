@@ -28,6 +28,8 @@
 		B66EA51D0C8767D100D01E12 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
 		B68421580C6CA73F00966DBA /* French */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = French; path = French.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B68421600C6CA9EC00966DBA /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/main.nib; sourceTree = "<group>"; };
+		B6AC525F0C881383007EAF7C /* Italian */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B6AC52CF0C8814B3007EAF7C /* Italian */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Italian; path = Italian.lproj/main.nib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,13 @@
 			isa = PBXProject;
 			buildConfigurationList = 4E59BCAE08A8249B001206A8 /* Build configuration list for PBXProject "AutoExifMover" */;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				Italian,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* Automator Action */;
 			projectDirPath = "";
 			targets = (
@@ -188,6 +197,7 @@
 			children = (
 				089C167EFE841241C02AAC07 /* English */,
 				B68421580C6CA73F00966DBA /* French */,
+				B6AC525F0C881383007EAF7C /* Italian */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -197,6 +207,7 @@
 			children = (
 				65AABA19056A9B5C006CE269 /* English */,
 				B68421600C6CA9EC00966DBA /* French */,
+				B6AC52CF0C8814B3007EAF7C /* Italian */,
 			);
 			name = main.nib;
 			sourceTree = "<group>";
