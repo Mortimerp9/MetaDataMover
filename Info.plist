@@ -22,7 +22,16 @@
 	<key>AMCategory</key>
 	<string>Terminal</string>
 	<key>AMDefaultParameters</key>
-	<dict/>
+	<dict>
+		<key>action</key>
+		<integer>1</integer>
+		<key>overwrite</key>
+		<false/>
+		<key>pathPattern</key>
+		<string>%Y_%m_%d/</string>
+		<key>test</key>
+		<false/>
+	</dict>
 	<key>AMDescription</key>
 	<dict>
 		<key>AMDInput</key>
@@ -67,11 +76,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleGetInfoString</key>
-	<string>AutoExifMover version 1.0, Copyright (c) 2007, __MyCompanyName__.</string>
+	<string>MetaDataMover version 1.0, Copyright (c) 2007, Pierre Andrews.</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.Automator.MetaDataMover</string>
+	<string>org.gamboni.6v8..Automator.MetaDataMover</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
