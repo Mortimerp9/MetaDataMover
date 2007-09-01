@@ -1,19 +1,14 @@
 Author: Pierre Andrews
 Version: 1.0
 Release: 10 August 2007
-URL: http://6v8.gamboni.org/Move-Rename-Images-according-to.html
+URL: http://6v8.gamboni.org/Move-Rename-Files-according-to.html
 License: GPL
 
 ======================================================================
 
-This is an Automator action (for Apple Automator.app) that takes a list of images as input and will move them according to a special pattern which can contain EXIF data.
+This is an Automator action (for Apple Automator.app) that takes a list of files as input and will move them according to a special pattern which can contain calls to Meta Data fields (EXIF for images, ID3 for mp3, etc...).
 
-You will need to install:
-http://www.sno.phy.queensu.ca/~phil/exiftool/install.html#OSX
-
-Install the action file in ~/Library/Automator/ or /Library/Automator
-
-In the current version, if a file with the same path already exist, the auto mover will erase it. So be careful. This is in the TODO list.
+To install, copy the action file in ~/Library/Automator/ or /Library/Automator.
 
 ======================================================================
 
@@ -28,7 +23,7 @@ GNU General Public License for more details.
 
 ----------------------------------------------------------------------
 
-For example, if you have a bunch of images that you want to move in directories named from the date they were taken, like:
+For example, if you have a bunch of images that you want to move in directories named from the date they were taken at, like:
 2007
    08
      12
@@ -42,7 +37,7 @@ For example, if you have a bunch of images that you want to move in directories 
       28
         IMG_4.jpg
 
-You can pass them to this automator action with the pattern:
+You can pass them to this automator action with the path pattern:
 %Y/%m/%d/
 
 From the EXIF data,
@@ -56,9 +51,9 @@ The date format is the one provided by the strftime tool. See it's man page for 
 
 You can also tell the tool to extract other EXIF information by putting the field name between ':' in the pattern:
 %Y/%m/%d/:Model:/
-will put the photos in subdirectories by date and model of the camera.
+will put the photos in subdirectories by date of the photo and model of the camera.
 
-This will only work on files with EXIF fields and on system with exiftool installed.
+This will only work on files with the correct meta data fields.
 
 There are also special patterns:
 :basename: is the name of the file, without extensions
