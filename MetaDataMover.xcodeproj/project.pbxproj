@@ -13,6 +13,8 @@
 		65081C38067A9A0C006247A1 /* Automator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AABA78056AB2A5006CE269 /* Automator.framework */; };
 		B4BFE1BF07F3472F00449807 /* main.command in Resources */ = {isa = PBXBuildFile; fileRef = B4BFE1BE07F3472F00449807 /* main.command */; };
 		B66EA57C0C8767D100D01E12 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = B66EA51D0C8767D100D01E12 /* lib */; };
+		B6726A6B0C8B061C0054F267 /* MetaDataMover.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6726A690C8B061C0054F267 /* MetaDataMover.tiff */; };
+		B6726A6C0C8B061C0054F267 /* MetaDataMoverLarge.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6726A6A0C8B061C0054F267 /* MetaDataMoverLarge.tiff */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		65AABA78056AB2A5006CE269 /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = /System/Library/Frameworks/Automator.framework; sourceTree = "<absolute>"; };
 		B4BFE1BE07F3472F00449807 /* main.command */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = main.command; sourceTree = "<group>"; };
 		B66EA51D0C8767D100D01E12 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
+		B6726A690C8B061C0054F267 /* MetaDataMover.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = MetaDataMover.tiff; sourceTree = "<group>"; };
+		B6726A6A0C8B061C0054F267 /* MetaDataMoverLarge.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = MetaDataMoverLarge.tiff; sourceTree = "<group>"; };
 		B68421580C6CA73F00966DBA /* French */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = French; path = French.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B68421600C6CA9EC00966DBA /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/main.nib; sourceTree = "<group>"; };
 		B6AC525F0C881383007EAF7C /* Italian */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -70,6 +74,8 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B6726A690C8B061C0054F267 /* MetaDataMover.tiff */,
+				B6726A6A0C8B061C0054F267 /* MetaDataMoverLarge.tiff */,
 				65AABA18056A9B5C006CE269 /* main.nib */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 			);
@@ -170,6 +176,8 @@
 				65081C33067A9A0C006247A1 /* main.nib in Resources */,
 				B4BFE1BF07F3472F00449807 /* main.command in Resources */,
 				B66EA57C0C8767D100D01E12 /* lib in Resources */,
+				B6726A6B0C8B061C0054F267 /* MetaDataMover.tiff in Resources */,
+				B6726A6C0C8B061C0054F267 /* MetaDataMoverLarge.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
