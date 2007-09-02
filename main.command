@@ -104,6 +104,8 @@ while(<>) {
 				}
 				$path =~ s/_+/_/g;
 				$path =~ s/_:cnt://g;
+			} else {
+				$path =~ s/:cnt://g;			
 			}
 
 			if(!$ENV{'test'}) {
