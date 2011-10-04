@@ -22,7 +22,7 @@
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		65081C3A067A9A0C006247A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		65081C3A067A9A0C006247A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		65081C3B067A9A0C006247A1 /* MetaDataMover.action */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetaDataMover.action; sourceTree = BUILT_PRODUCTS_DIR; };
 		65AABA19056A9B5C006CE269 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/main.nib; sourceTree = "<group>"; };
 		65AABA78056AB2A5006CE269 /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = /System/Library/Frameworks/Automator.framework; sourceTree = "<absolute>"; };
@@ -32,6 +32,12 @@
 		B6726A6A0C8B061C0054F267 /* MetaDataMoverLarge.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = MetaDataMoverLarge.tiff; sourceTree = "<group>"; };
 		B68421580C6CA73F00966DBA /* French */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = French; path = French.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B68421600C6CA9EC00966DBA /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/main.nib; sourceTree = "<group>"; };
+		B6A925BE0D65AB970084EF61 /* dmg_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dmg_back.png; sourceTree = "<group>"; };
+		B6A925BF0D65AB970084EF61 /* DMG_icns.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DMG_icns.icns; sourceTree = "<group>"; };
+		B6A925C00D65AB970084EF61 /* DMG_icns.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DMG_icns.png; sourceTree = "<group>"; };
+		B6A925C10D65AB970084EF61 /* license.r */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.rez; path = license.r; sourceTree = "<group>"; };
+		B6A925C20D65AB970084EF61 /* make-diskimage.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = "make-diskimage.sh"; sourceTree = "<group>"; };
+		B6A925C30D65AB970084EF61 /* Stage.dmg */ = {isa = PBXFileReference; lastKnownFileType = file; path = Stage.dmg; sourceTree = "<group>"; };
 		B6AC525F0C881383007EAF7C /* Italian */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B6AC52CF0C8814B3007EAF7C /* Italian */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Italian; path = Italian.lproj/main.nib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -52,6 +58,7 @@
 		089C166AFE841209C02AAC07 /* Automator Action */ = {
 			isa = PBXGroup;
 			children = (
+				B6A925BD0D65AB970084EF61 /* Release */,
 				65AABA0F056A9AD1006CE269 /* Scripts */,
 				08FB77AFFE84173DC02AAC07 /* Classes */,
 				089C167CFE841241C02AAC07 /* Resources */,
@@ -124,6 +131,19 @@
 			name = Scripts;
 			sourceTree = "<group>";
 		};
+		B6A925BD0D65AB970084EF61 /* Release */ = {
+			isa = PBXGroup;
+			children = (
+				B6A925BE0D65AB970084EF61 /* dmg_back.png */,
+				B6A925BF0D65AB970084EF61 /* DMG_icns.icns */,
+				B6A925C00D65AB970084EF61 /* DMG_icns.png */,
+				B6A925C10D65AB970084EF61 /* license.r */,
+				B6A925C20D65AB970084EF61 /* make-diskimage.sh */,
+				B6A925C30D65AB970084EF61 /* Stage.dmg */,
+			);
+			path = Release;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -134,6 +154,7 @@
 				65081C31067A9A0C006247A1 /* Resources */,
 				65081C36067A9A0C006247A1 /* Frameworks */,
 				250388A2080C870600E1128B /* ShellScript */,
+				B63971590D64F4F60006AA70 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -151,6 +172,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 4E59BCAE08A8249B001206A8 /* Build configuration list for PBXProject "MetaDataMover" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -161,6 +183,7 @@
 			);
 			mainGroup = 089C166AFE841209C02AAC07 /* Automator Action */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				65081C2D067A9A0C006247A1 /* MetaDataMover */,
 			);
@@ -196,6 +219,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/bin/amlint \"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\"";
+		};
+		B63971590D64F4F60006AA70 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ $CONFIGURATION == \"Release\" ]; then\n\techo \"Preparing disk image files..\"\n\n\tif [ -f $TARGET_BUILD_DIR/$TARGET_NAME.dmg ]; then\n\t\trm $TARGET_BUILD_DIR/$TARGET_NAME.dmg\n\tfi\n\n\techo \"Creating disk image..\"\n\t./Release/make-diskimage.sh $TARGET_BUILD_DIR/$TARGET_NAME.dmg \"$TARGET_NAME\" ./Release/License.r\n\n\techo \"done.\"\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 

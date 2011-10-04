@@ -4,7 +4,7 @@
 # AutoExifMover
 
 #  Created by Pierre Andrews on 01/07/2007.
-#  Copyright 2007 Pierre Andrews. All rights reserved.
+#  Copyright 2007-2008 Pierre Andrews. All rights reserved.
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation; either version 3 of the License, or any later version.

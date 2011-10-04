@@ -1,0 +1,1627 @@
+#------------------------------------------------------------------------------
+# File:         ExifTool.pod - Documentation for File::ExifTool
+#
+# Description:  Read and write meta information
+#
+# URL:          http://owl.phy.queensu.ca/~phil/exiftool/
+#
+# Legal:        Copyright (c) 2003-2008, Phil Harvey (phil at owl.phy.queensu.ca)
+#               This library is free software; you can redistribute it and/or
+#               modify it under the same terms as Perl itself.
+#------------------------------------------------------------------------------
+
+=head1 NAME
+
+Image::ExifTool - Read and write meta information
+
+=head1 SYNOPSIS
+
+  use Image::ExifTool qw(:Public);
+
+  # ---- Simple procedural usage ----
+
+  # Get hash of meta information tag names/values from an image
+  $info = ImageInfo('a.jpg');
+
+  # ---- Object-oriented usage ----
+
+  # Create a new Image::ExifTool object
+  $exifTool = new Image::ExifTool;
+
+  # Extract meta information from an image
+  $exifTool->ExtractInfo($file, \%options);
+
+  # Get list of tags in the order they were found in the file
+  @tagList = $exifTool->GetFoundTags('File');
+
+  # Get the value of a specified tag
+  $value = $exifTool->GetValue($tag, $type);
+
+  # Get a tag description
+  $description = $exifTool->GetDescription($tag);
+
+  # Get the group name associated with this tag
+  $group = $exifTool->GetGroup($tag, $family);
+
+  # Set a new value for a tag
+  $exifTool->SetNewValue($tag, $newValue);
+
+  # Write new meta information to a file
+  $success = $exifTool->WriteInfo($srcfile, $dstfile);
+
+  # ...plus a host of other useful methods...
+
+=head1 DESCRIPTION
+
+ExifTool provides an extensible set of perl modules to read and write meta
+information in image, audio and video files, including the maker note
+information of many digital cameras by various manufacturers such as Canon,
+Casio, FujiFilm, HP, JVC/Victor, Kodak, Leaf, Minolta/Konica-Minolta, Nikon,
+Olympus/Epson, Panasonic/Leica, Pentax/Asahi, Ricoh, Sanyo, Sigma/Foveon and
+Sony.
+
+Below is a list of file types and meta information formats currently
+supported by ExifTool (r = read, w = write, c = create):
+
+                File Types                 |    Meta Information
+  ---------------------------------------  |  --------------------
+  3FR   r       ITC   r       PPM   r/w    |  EXIF           r/w/c
+  ACR   r       JNG   r/w     PPT   r      |  GPS            r/w/c
+  AI    r       JP2   r/w     PS    r/w    |  IPTC           r/w/c
+  AIFF  r       JPEG  r/w     PSD   r/w    |  XMP            r/w/c
+  APE   r       K25   r       QTIF  r      |  MakerNotes     r/w/c
+  ARW   r       KDC   r       RA    r      |  Photoshop IRB  r/w/c
+  ASF   r       M4A   r       RAF   r/w    |  ICC Profile    r/w/c
+  AVI   r       MEF   r/w     RAM   r      |  MIE            r/w/c
+  BMP   r       MIE   r/w/c   RAW   r/w    |  JFIF           r/w/c
+  BTF   r       MIFF  r       RIFF  r      |  Ducky APP12    r/w/c
+  CR2   r/w     MNG   r/w     RM    r      |  CIFF           r/w
+  CRW   r/w     MOS   r/w     SR2   r      |  AFCP           r/w
+  CS1   r/w     MOV   r       SRF   r      |  JPEG 2000      r
+  DCM   r       MP3   r       SVG   r      |  DICOM          r
+  DCR   r       MP4   r       SWF   r      |  Flash          r
+  DIVX  r       MPC   r       THM   r/w    |  FlashPix       r
+  DNG   r/w     MPG   r       TIFF  r/w    |  QuickTime      r
+  DOC   r       MRW   r/w     VRD   r/w/c  |  GeoTIFF        r
+  EPS   r/w     NEF   r/w     WAV   r      |  PrintIM        r
+  ERF   r/w     OGG   r       WDP   r/w    |  ID3            r
+  FLAC  r       ORF   r/w     WMA   r      |  Kodak Meta     r
+  FLV   r       PBM   r/w     WMV   r      |  Ricoh RMETA    r
+  FPX   r       PDF   r/w     X3F   r      |  Picture Info   r
+  GIF   r/w     PEF   r/w     XLS   r      |  Adobe APP14    r
+  HDP   r/w     PGM   r/w     XMP   r/w/c  |  APE            r
+  HTML  r       PICT  r                    |  Vorbis         r
+  ICC   r/w/c   PNG   r/w                  |  (and more)
+
+=head1 CONFIGURATION
+
+User-defined tags can be added via the ExifTool configuration file, or by
+defining the %Image::ExifTool::UserDefined hash before calling any ExifTool
+functions.  See "ExifTool_config" in the ExifTool distribution for more
+details.  If necessary, the configuration feature can be disabled by setting
+the ExifTool C<noConfig> flag before loading Image::ExifTool.  For example:
+
+    BEGIN { $Image::ExifTool::noConfig = 1 }
+    use Image::ExifTool;
+
+=head1 EXPORTS
+
+Exports nothing by default, but L</ImageInfo> and all static functions may
+be exported with the C<:Public> export list.
+
+=head1 METHODS
+
+=head2 new
+
+Creates a new ExifTool object.
+
+    $exifTool = new Image::ExifTool;
+
+Note that ExifTool uses AUTOLOAD to load non-member methods, so any class
+using Image::ExifTool as a base class must define an AUTOLOAD which calls
+Image::ExifTool::DoAutoLoad().  ie)
+
+    sub AUTOLOAD
+    {
+        Image::ExifTool::DoAutoLoad($AUTOLOAD, @_);
+    }
+
+=head2 ImageInfo
+
+Obtain meta information from image.  This is the one step function for
+obtaining meta information from an image.  Internally, L</ImageInfo> calls
+L</ExtractInfo> to extract the information, L</GetInfo> to generate the
+information hash, and L</GetTagList> for the returned tag list.
+
+    # Return meta information for 2 tags only (procedural)
+    $info = ImageInfo($filename, $tag1, $tag2);
+
+    # Return information about an open image file (object-oriented)
+    $info = $exifTool->ImageInfo(\*FILE);
+
+    # Return information from image data in memory for specified tags
+    %options = (PrintConv => 0);
+    @tagList = qw(filename imagesize xmp:creator exif:* -ifd1:*);
+    $info = ImageInfo(\$imageData, \@tagList, \%options);
+
+    # Extract information from an embedded thumbnail image
+    $info = ImageInfo('image.jpg', 'thumbnailimage');
+    $thumbInfo = ImageInfo($$info{ThumbnailImage});
+
+=over 4
+
+=item Inputs:
+
+L</ImageInfo> is very flexible about the input arguments, and interprets
+them based on their type.  It may be called with one or more arguments.
+The one required argument is either a SCALAR (the image file name), a file
+reference (a reference to the image file) or a SCALAR reference (a
+reference to the image in memory).  Other arguments are optional.  The
+order of the arguments is not significant, except that the first SCALAR is
+taken to be the file name unless a file reference or scalar reference comes
+earlier in the argument list.
+
+Below is an explanation of how the L</ImageInfo> function arguments are
+interpreted:
+
+=over 4
+
+=item ExifTool ref
+
+L</ImageInfo> may be called with an ExifTool object if desired.  The
+advantage of using the object-oriented form is that the options may be set
+before calling L</ImageInfo>, and the object may be used afterward to access
+member functions.  Must be the first argument if used.
+
+=item SCALAR
+
+The first scalar argument is taken to be the file name unless an earlier
+argument specified the image data via a file reference (file ref) or data
+reference (SCALAR ref).  The remaining scalar arguments are names of tags
+for requested information.  If no tags are specified, all possible
+information is extracted.
+
+Tag names are case-insensitive and may be prefixed by an optional group name
+followed by a colon.  The group name may begin with a family number
+(ie. '1IPTC:Keywords'), to restrict matches to a specific family.  A tag
+name of '*' may be used, thus allowing 'GROUP:*' to represent all tags in a
+specific group, or a group name of '*' may be used, in which case all
+available instances of the specified tag are returned regardless of the
+L</Duplicates> setting (ie. '*:WhiteBalance').  And finally, a leading '-'
+indicates tags to be excluded (ie. '-IFD1:*').
+
+Note that keys in the returned information hash and elements of the returned
+tag list are not necessarily the same as these tag names -- group names are
+removed, the case may be changed, and an instance number may be added.  For
+this reason it is best to use either the keys of the returned hash or the
+elements of the tag array when accessing the tag values.
+
+See L<Image::ExifTool::TagNames|Image::ExifTool::TagNames> for a complete
+list of ExifTool tag names.
+
+=item File ref
+
+A reference to an open image file.  If you use this method (or a SCALAR
+reference) to access information in an image, the FileName and Directory
+tags will not be returned.  (Also, the FileSize and FileModifyDate tags will
+not be returned unless it is a plain file.)  Image processing begins at the
+current file position, and on return the file position is unspecified.  May
+be either a standard GLOB reference, or a reference to a
+L<File::RandomAccess|File::RandomAccess> object;
+
+=item SCALAR ref
+
+A reference to image data in memory.
+
+=item ARRAY ref
+
+Reference to a list of tag names.  On entry, any elements in the list are
+added to the list of requested tags.  Tags with names beginning with '-' are
+excluded.  On return, this list is updated to contain an ordered list of tag
+keys for all extracted tags.
+
+=item HASH ref
+
+Reference to a hash containing the options settings.  See L</Options>
+documentation below for a list of available options.  Options specified
+as arguments to L</ImageInfo> take precedence over L</Options> settings.
+
+=back
+
+=item Return Values:
+
+L</ImageInfo> returns a reference to a hash of tag key/value pairs.  The tag
+keys are identifiers, which are similar to the tag names but may have an
+embedded instance number if multiple tags with the same name were extracted
+from the image.  Many of the ExifTool functions require a tag key as an
+argument. Use L</GetTagName [static]> to get the tag name for a given tag
+key.  Note that the case of the tag names may not be the same as requested.
+Here is a simple example to print out the information returned by
+L</ImageInfo>:
+
+    foreach (sort keys %$info) {
+        print "$_ => $$info{$_}\n";
+    }
+
+Values of the returned hash are usually simple scalars, but a scalar
+reference is used to indicate binary data and an array reference may be used
+to indicate a list.  Lists of values are joined by commas into a single
+string if and only if the PrintConv option is enabled and the List option is
+disabled (which are the defaults).  Note that binary values are not
+necessarily extracted unless specifically requested or the Binary option is
+set.  If not extracted the value is a reference to a string of the form
+"Binary data ##### bytes".
+
+The code below gives an example of how to handle these return values, as
+well as illustrating the use of other ExifTool functions:
+
+    use Image::ExifTool;
+    my $exifTool = new Image::ExifTool;
+    $exifTool->Options(Unknown => 1);
+    my $info = $exifTool->ImageInfo('a.jpg');
+    my $group = '';
+    my $tag;
+    foreach $tag ($exifTool->GetFoundTags('Group0')) {
+        if ($group ne $exifTool->GetGroup($tag)) {
+            $group = $exifTool->GetGroup($tag);
+            print "---- $group ----\n";
+        }
+        my $val = $info->{$tag};
+        if (ref $val eq 'SCALAR') {
+            if ($$val =~ /^Binary data/) {
+                $val = "($$val)";
+            } else {
+                my $len = length($$val);
+                $val = "(Binary data $len bytes)";
+            }
+        }
+        printf("%-32s : %s\n", $exifTool->GetDescription($tag), $val);
+    }
+
+As well as tags representing information extracted from the image,
+the following tags generated by ExifTool may be returned:
+
+    ExifToolVersion - The ExifTool version number.
+
+    Error - An error message if the image could not be processed.
+
+    Warning - A warning message if problems were encountered while
+              processing the image.
+
+=back
+
+=head2 Options
+
+Get/set ExifTool options.  This function can be called to set the default
+options for an ExifTool object.  Options set this way are in effect for
+all function calls but may be overridden by options passed as arguments
+to a specific function.
+
+    # Exclude the 'OwnerName' tag from returned information
+    $exifTool->Options(Exclude => 'OwnerName');
+
+    # Only get information in EXIF or MakerNotes groups
+    $exifTool->Options(Group0 => ['EXIF', 'MakerNotes']);
+
+    # Ignore information from IFD1
+    $exifTool->Options(Group1 => '-IFD1');
+
+    # Sort by groups in family 2, and extract unknown tags
+    $exifTool->Options(Sort => 'Group2', Unknown => 1);
+
+    # Do not extract duplicate tag names
+    $oldSetting = $exifTool->Options(Duplicates => 0);
+
+    # Get current setting
+    $isVerbose = $exifTool->Options('Verbose');
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference.
+
+1) Option parameter name.
+
+2) [optional] Option parameter value (may be undef to clear option).
+
+3-N) [optional] Additional parameter/value pairs.
+
+=item Option Parameters:
+
+=over 4
+
+=item Binary
+
+Flag to extract the value data for all binary tags.  Tag values representing
+large binary data blocks (ie. ThumbnailImage) are not necessarily extracted
+unless this option is set or the tag is specifically requested by name.
+Default is 0.
+
+=item ByteOrder
+
+The byte order for newly created EXIF segments when writing.  Note that if
+EXIF information already exists, the existing order is maintained.  Valid
+values are 'MM', 'II' and undef.  If ByteOrder is not defined (the default),
+then the maker note byte order is used (if they are being copied), otherwise
+big-endian ('MM') order is assumed.  This can also be set via the
+ExifByteOrder tag, but the ByteOrder option takes precedence if both are
+set.
+
+=item Charset
+
+Character set for encoding character strings containing code points above
+U+007F.  Valid values are:
+
+  UTF8  - UTF-8 characters (the default)
+  Latin - Windows Latin1 (cp1252)
+
+Note that this option affects some types of information when reading/writing
+the file and other types when getting/setting tag values, so it must be
+defined for both types of access.
+
+=item Compact
+
+Flag to write compact output.  Default is 0.  The XMP specification suggests
+that the data be padded with blanks to allow in-place editing.  By setting
+this flag, 2kB is saved for files with XMP data.
+
+=item Composite
+
+Flag to calculate Composite tags automatically.  Default is 1.
+
+=item Compress
+
+Flag to write new values in compressed format if possible.  Has no effect
+unless Compress::Zlib is installed.  Default is 0.
+
+=item CoordFormat
+
+Format for printing GPS coordinates.  This is a printf format string with
+specifiers for degrees, minutes and seconds in that order, however minutes
+and seconds may be omitted.  For example, the following table gives the
+output for the same coordinate using various formats:
+
+        CoordFormat          Example Output
+    -------------------    ------------------
+    q{%d deg %d' %.2f"}    54 deg 59' 22.80"   (the default)
+    q{%d deg %.4f min}     54 deg 59.3800 min
+    q{%.6f degrees}        54.989667 degrees
+
+=item DateFormat
+
+Format for printing date/time values.  See C<strftime> in the L<POSIX>
+package for details about the format string.  The default is similar to a
+format of "%Y:%m:%d %H:%M:%S".  If date can not be converted, value is left
+unchanged unless the StrictDate option is set.  Timezones are ignored.
+
+=item Duplicates
+
+Flag to preserve values of duplicate tags (instead of overwriting existing
+value).  Default is 1.
+
+=item Exclude
+
+Exclude specified tags from tags extracted from an image.  The option value
+is either a tag name or reference to a list of tag names to exclude.  The
+case of tag names is not significant.  This option is ignored for
+specifically requested tags.  Tags may also be excluded by preceeding their
+name with a '-' in the arguments to L</ImageInfo>.
+
+=item FastScan
+
+Flag to increase speed of extracting information from JPEG images.  With
+this option set, ExifTool will not scan to the end of a JPEG image to check
+for an AFCP, CanonVRD, FotoStation, PhotoMechanic, MIE or PreviewImage
+trailer.  Also, when combined with the ScanForXMP option, prevents scanning
+for XMP in recognized file types.  Default 0.
+
+=item FixBase
+
+Fix maker notes base offset.  A common problem with image editing software
+is that offsets in the maker notes are not adjusted properly when the file
+is modified.  This may cause the wrong values to be extracted for some maker
+note entries when reading the edited file.  FixBase specifies an integer
+value to be added to the maker notes base offset.  It may also be set to the
+empty string ('') for ExifTool will take its best guess at the correct base,
+or undef (the default) for no base adjustment.
+
+=item Group#
+
+Extract tags only for specified groups in family # (Group0 assumed if #
+not given).  The option value may be a single group name or a reference
+to a list of groups.  Case is significant in group names.  Specify a
+group to be excluded by preceding group name with a '-'.  See
+L</GetAllGroups [static]> for a list of available groups.
+
+=item HtmlDump
+
+Dump information in hex to dynamic HTML web page.  The value may be 0-3 for
+increasingly larger limits on the maximum block size.  Default is 0.  Output
+goes to the file specified by the TextOut option (\*STDOUT by default).
+
+=item HtmlDumpBase
+
+Specifies base for HTML dump offsets.  If not defined, the EXIF/TIFF base
+offset is used.  Set to 0 for absolute offsets.  Default is undef.
+
+=item IgnoreMinorErrors
+
+Flag to ignore minor errors.  Causes minor errors to be downgraded to
+warnings, and minor warnings to be ignored.  This option is provided mainly
+to allow writing of files when minor errors occur, but also allows thumbnail
+and preview images to be extracted even if they don't have a recognizable
+header.  Minor errors/warnings are denoted by '[minor]' at the start of the
+message.
+
+=item List
+
+Flag to extract lists of PrintConv values into arrays instead of
+concatenating them into comma-separated strings.  Default is 0.
+
+=item MakerNotes
+
+Option to extract MakerNotes and other writable subdirectories (such as
+PrintIM) as a data block.  Normally when the MakerNotes are extracted they
+are rebuilt to include data outside the boundaries of the original maker
+note data block, but a value of 2 disables this feature.  Possible values
+are:
+
+  0 - Do not extract writable subdirectories [default]
+  1 - Extract and rebuild maker notes into self-contained block
+  2 - Extract without rebuilding maker notes
+
+=item MissingTagValue
+
+Value for missing tags in expressions evaluated by L</SetNewValuesFromFile>.
+If not set, a minor error is issued for missing values, or the value is set
+to '' if L</IgnoreMinorErrors> is set.  Default is undef.
+
+=item PrintConv
+
+Flag to enable automatic print conversion.  Also enables inverse
+print conversion for writing.  Default is 1.
+
+=item ScanForXMP
+
+Flag for scan all files (even unrecognized formats) for XMP information
+unless XMP was already found in the file.  When combined with the FastScan
+option, only unrecognized file types are scanned for XMP.  Default is 0.
+
+=item Sort
+
+Specifies order to sort tags in returned list:
+
+  Alpha  - Sort alphabetically
+  File   - Sort in order that tags were found in the file
+  Group# - Sort by tag group, where # is the group family
+           number.  If # is not specified, Group0 is assumed.
+           See GetGroup for a list of groups.
+  Input  - Sort in same order as input tag arguments (default)
+
+=item StrictDate
+
+Flag to return undefined value for any date which can't be converted when
+the DateFormat option is used.  Default is 0.
+
+=item TextOut
+
+Output file reference for Verbose and HtmlDump options.  Default is
+\*STDOUT.
+
+=item Unknown
+
+Flag to get the values of unknown tags.  If set to 1, unknown tags are
+extracted from EXIF (or other tagged-format) directories.  If set to 2,
+unknown tags are also extracted from binary data blocks.  Default is 0.
+
+=item Verbose
+
+Print verbose messages to file specified by TextOut option.  Value may be
+from 0 to 5 for increasingly verbose messages.  Default is 0.  With the
+verbose option set, messages are printed to the console as the file is
+parsed.  Level 1 prints the tag names and raw values.  Level 2 adds more
+details about the tags.  Level 3 adds a hex dump of the tag data, but with
+limits on the number of bytes dumped.  Levels 4 and 5 remove the dump limit
+on tag values and JPEG segment data respectively.
+
+=back
+
+=item Return Values:
+
+The original value of the last specified parameter.
+
+=back
+
+=head2 ClearOptions
+
+Reset all options to their default values.
+
+    $exifTool->ClearOptions();
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+=item Return Values:
+
+(none)
+
+=back
+
+=head2 ExtractInfo
+
+Extract all meta information from an image.
+
+    $success = $exifTool->ExtractInfo('image.jpg', \%options);
+
+=over 4
+
+=item Inputs:
+
+L</ExtractInfo> takes exactly the same arguments as L</ImageInfo>.  The only
+difference is that a list of tag keys is not returned if an ARRAY reference
+is given.  The following options are effective in the call to
+L</ExtractInfo>:
+
+Binary, Charset, Composite, FastScan, FixBase, HtmlDump, HtmlDumpBase,
+IgnoreMinorErrors, MakerNotes, ScanForXMP, TextOut, Unknown and Verbose.
+
+=item Return Value:
+
+1 if image was valid, 0 otherwise (and 'Error' tag set).
+
+=back
+
+=head2 GetInfo
+
+L</GetInfo> is called to return meta information after it has been extracted
+from the image by a previous call to L</ExtractInfo> or L</ImageInfo>. This
+function may be called repeatedly after a single call to L</ExtractInfo> or
+L</ImageInfo>.
+
+    # Get image width and hieght only
+    $info = $exifTool->GetInfo('ImageWidth', 'ImageHeight');
+
+    # Get information for all tags in list (list updated with tags found)
+    $info = $exifTool->GetInfo(\@ioTagList);
+
+    # Get all information in Author or Location groups
+    $info = $exifTool->GetInfo({Group2 => ['Author', 'Location']});
+
+=over 4
+
+=item Inputs:
+
+Inputs are the same as L</ExtractInfo> and L</ImageInfo> except that an
+image can not be specified.  Options in effect are:
+
+Charset, CoordFormat, DateFormat, Duplicates, Exclude, Group#, List,
+StrictDate, PrintConv (and Sort if a tag list reference is given).
+
+=item Return Value:
+
+Reference to information hash, the same as with L</ImageInfo>.
+
+=back
+
+=head2 WriteInfo
+
+Write meta information to a file.  The specified source file is rewritten to
+the same-type destination file with new information as specified by previous
+calls to L</SetNewValue>.  The necessary segments and/or directories are
+created in the destination file as required to store the specified
+information.  May be called repeatedly to write the same information to
+additional files without the need to call L</SetNewValue> again.
+
+    # add information to a source file, writing output to new file
+    $exifTool->WriteInfo($srcfile, $dstfile);
+
+    # create XMP data file from scratch
+    $exifTool->WriteInfo(undef, $dstfile, 'XMP');
+
+    # edit file in place (you do have backups, right?)
+    $exifTool->WriteInfo($srcfile);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Source file name, file reference, scalar reference, or undef to create a
+file from scratch
+
+2) [optional] Destination file name, file reference, scalar reference, or
+undef to edit in place
+
+3) [optional] Destination file type
+
+=item Return Value:
+
+1 if file was written OK, 2 if file was written but no changes made, 0 on
+file write error.
+
+If an error code is returned, an Error tag is set and GetValue('Error') can
+be called to obtain the error description.  A Warning tag may be set even if
+this routine is successful.
+
+    $errorMessage = $exifTool->GetValue('Error');
+    $warningMessage = $exifTool->GetValue('Warning');
+
+=item Notes:
+
+The source file name may be undefined to create a file from scratch
+(currently only XMP, ICC and MIE files can be created in this way).  If
+undefined, the destination file type is required unless the type can be
+determined from the destination file name.
+
+If a destination file name is given, the specified file must not exist
+because an existing destination file will not be overwritten.  The
+destination file name may be undefined to edit the source file in place
+(make sure you have backups!).  In this case, a temporary file is created
+and renamed to replace the source file if no errors occurred while writing.
+
+The destination file type is only used if the source file is undefined.
+
+=back
+
+=head2 CombineInfo
+
+Combine information from more than one information hash into a single hash.
+
+    $info = $exifTool->CombineInfo($info1, $info2, $info3);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1-N) Information hash references
+
+=back
+
+If the Duplicates option is disabled and duplicate tags exist, the order of
+the hashes is significant.  In this case, the value used is the first value
+found as the hashes are scanned in order of input.  The Duplicates option
+is the only option that is in effect for this function.
+
+=head2 GetTagList
+
+Get a sorted list of tags from the specified information hash or tag list.
+
+    @tags = $exifTool->GetTagList($info, 'Group0');
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference,
+
+1) [optional] Information hash reference or tag list reference,
+
+2) [optional] Sort order ('File', 'Input', 'Alpha' or 'Group#').
+
+If the information hash or tag list reference is not provided, then the list
+of found tags from the last call to L</ImageInfo>, L</ExtractInfo> or
+L</GetInfo> is used instead, and the result is the same as if
+L</GetFoundTags> was called.  If sort order is not specified, the sort order
+is taken from the current options settings.
+
+=item Return Values:
+
+A list of tags in the specified order.
+
+=back
+
+=head2 GetFoundTags
+
+Get list of found tags in specified sort order.  The found tags are the tags
+for the information obtained from the most recent call to L</ImageInfo>,
+L</ExtractInfo> or L</GetInfo> for this object.
+
+    @tags = $exifTool->GetFoundTags('File');
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) [optional] Sort order ('File', 'Input', 'Alpha' or 'Group#')
+
+If sort order is not specified, the sort order from the ExifTool options is
+used.
+
+=item Return Values:
+
+A list of tag keys in the specified order.
+
+=back
+
+=head2 GetRequestedTags
+
+Get list of requested tags.  These are the tags that were specified in the
+arguments of the most recent call to L</ImageInfo>, L</ExtractInfo> or
+L</GetInfo>, including tags specified via a tag list reference. Shortcut
+tags are expanded in the list.
+
+    @tags = $exifTool->GetRequestedTags();
+
+=over 4
+
+=item Inputs:
+
+(none)
+
+=item Return Values:
+
+List of requested tag keys in the same order that the tags were specified.
+Note that this list will be empty if tags were not specifically requested
+(ie. If extracting all tags).
+
+=back
+
+=head2 GetValue
+
+Get the value of a specified tag.  The returned value is either the
+human-readable (PrintConv) value, the converted machine-readable (ValueConv)
+value, or the original raw (Raw) value.  If the value type is not specified,
+the PrintConv value is returned if the PrintConv option is set, otherwise
+the ValueConv value is returned.  The PrintConv values are same as the
+values returned by L</ImageInfo> and L</GetInfo> in the tag/value hash
+unless the PrintConv option is disabled.
+
+Tags which represent lists of multiple values (as may happen with 'Keywords'
+for example) are handled specially.  In scalar context, the returned
+PrintConv value for these tags is either a comma-separated string of values
+or a list reference (depending on the List option setting), and the
+ValueConv value is always a list reference.  But in list context,
+L</GetValue> always returns the list itself.
+
+    # PrintConv example
+    my $val = $exifTool->GetValue($tag);
+    if (ref $val eq 'SCALAR') {
+        print "$tag = (unprintable value)\n";
+    } else {
+        print "$tag = $val\n";
+    }
+
+    # ValueConv examples
+    my $val = $exifTool->GetValue($tag, 'ValueConv');
+    if (ref $val eq 'ARRAY') {
+        print "$tag is a list of values\n";
+    } elsif (ref $val eq 'SCALAR') {
+        print "$tag represents binary data\n";
+    } else {
+        print "$tag is a simple scalar\n";
+    }
+
+    my @keywords = $exifTool->GetValue('Keywords', 'ValueConv');
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Tag key
+
+2) [optional] Value type, 'PrintConv', 'ValueConv', 'Both' or 'Raw'
+
+The default value type is 'PrintConv' if the PrintConv option is set,
+otherwise the default is 'ValueConv'.  A value type of 'Both' returns both
+ValueConv and PrintConv values as a list.
+
+=item Return Values:
+
+The value of the specified tag.  If the tag represents a list of values and
+the List option is disabled then PrintConv returns a comma separated string
+of values, otherwise a reference to the list is returned in scalar context.
+The list itself is returned in list context.  Values may also be scalar
+references to binary data.
+
+Note: It is possible for L</GetValue> to return an undefined ValueConv or
+PrintConv value (or an empty list in list context) even if the tag exists,
+since it is possible for these conversions to yield undefined values.
+
+=back
+
+=head2 SetNewValue
+
+Set the new value for a tag.  The routine may be called multiple times to
+set the values of many tags before using L</WriteInfo> to write the new
+values to an image.
+
+For list-type tags (like Keywords), either call repeatedly with the same tag
+name for each value, or call with a reference to the list of values.
+
+    # set a new value for a tag (errors go to STDERR)
+    $success = $exifTool->SetNewValue($tag, $value);
+
+    # set a new value and capture any error message
+    ($success, $errStr) = $exifTool->SetNewValue($tag, $value);
+
+    # delete information for specified tag if it exists in image
+    # (also resets AddValue and DelValue options for this tag)
+    $exifTool->SetNewValue($tag);
+
+    # reset all values from previous calls to SetNewValue()
+    $exifTool->SetNewValue();
+
+    # delete a specific keyword
+    $exifTool->SetNewValue('Keywords', $word, DelValue => 1);
+
+    # write a list of keywords
+    $exifTool->SetNewValue('Keywords', ['word1','word2']);
+
+    # add a keyword without replacing existing keywords
+    $exifTool->SetNewValue(Keywords => $word, AddValue => 1);
+
+    # set a tag in a specific group
+    $exifTool->SetNewValue(Headline => $val, Group => 'XMP');
+    $exifTool->SetNewValue('XMP:Headline' => $val);  # equivalent
+
+    # shift original date/time back by 1 hour
+    $exifTool->SetNewValue(DateTimeOriginal => '1:00', Shift => -1);
+
+    # delete all but EXIF tags
+    $exifTool->SetNewValue('*');  # delete all...
+    $exifTool->SetNewValue('EXIF:*', undef, Replace => 2); # ...but EXIF
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) [optional] Tag key or tag name, or undef to clear all new values.  A tag
+name of '*' can be used when deleting tags to delete all tags, or all tags
+in a specified group.  The tag name may be prefixed by group name, separated
+by a colon (ie. 'GROUP:TAG'), which is equivalent to using a 'Group' option
+argument.
+
+2) [optional] New value for tag.  Undefined to delete tag from file.  May be
+a scalar, scalar reference, or list reference to set a list of values.
+
+3-N) [optional] SetNewValue options hash entries (see below)
+
+=item SetNewValue Options:
+
+=over 4
+
+=item Type
+
+The type of value being set.  Valid values are PrintConv, ValueConv or Raw.
+Default is PrintConv if the L</PrintConv> Option is set, otherwise
+ValueConv.
+
+=item AddValue
+
+Specifies that the value be added to an existing list rather than replacing
+the list.  Valid values are 0 or 1.  Default is 0.
+
+=item DelValue
+
+Delete the existing tag if it has the specified value.  Valid values are
+0 or 1.  Default is 0.
+
+=item Group
+
+Specifies group name where tag should be written.  If not specified, tag is
+written to highest priority group as specified by L</SetNewGroups>.  Any
+family 0 or 1 group name may be used.  Case is not significant.
+
+=item NoShortcut
+
+Disables default behaviour of looking up tag in shortcuts if not found
+otherwise.
+
+=item Protected
+
+Bit mask for tag protection levels to write.  Bit 0x01 allows writing of
+'unsafe' tags (ie. tags not copied automatically via
+L</SetNewValuesFromFile>).  Bit 0x02 allows writing of 'protected' tags, and
+should only be used internally by ExifTool.  See
+L<Image::ExifTool::TagNames|Image::ExifTool::TagNames>, for a list of tag
+names indicating 'unsafe' and 'protected' tags.  Default is 0.
+
+=item Replace
+
+Flag to replace the previous new value for this tag (ie. replace the value
+set in a previous call to L</SetNewValue>).  Valid values are 0 (don't
+replace), 1 (replace with specified new value) or 2 (reset previous new
+value only).
+
+=item Shift
+
+Shift the tag by the specified value.  Currently only date/time tags can be
+shifted.  Undefined for no shift, 1 for a positive shift, or -1 for a
+negative shift.  If 0, the shift is applied only if the tag is shiftable,
+and the shift is positive if AddValue is set, or negative if DelValue is
+set.  Default is undef.  See
+L<Image::ExifTool::Shift.pl|Image::ExifTool::Shift.pl> for more information.
+
+=back
+
+=item Return Values:
+
+In scalar context, returns the number of tags set and error messages are
+printed to STDERR.  In list context, returns the number of tags set and the
+error string.
+
+=back
+
+=head2 SetNewValuesFromFile
+
+A very powerful routine that sets new values for tags from information found
+in a specified file.
+
+    # set new values from all information in a file...
+    my $info = $exifTool->SetNewValuesFromFile($srcFile);
+    # ...then write these values to another image
+    my $result = $exifTool->WriteInfo($file2, $outFile);
+
+    # set all new values, preserving original groups
+    $exifTool->SetNewValuesFromFile($srcFile, '*:*');
+
+    # set specific information
+    $exifTool->SetNewValuesFromFile($srcFile, @tags);
+
+    # set new value from a different tag in specific group
+    $exifTool->SetNewValuesFromFile($fp, 'IPTC:Keywords>XMP-dc:Subject');
+
+    # add all IPTC keywords to XMP subject list
+    $exifTool->SetNewValuesFromFile($fp, 'IPTC:Keywords+>XMP-dc:Subject');
+
+    # set new value from an expression involving other tags
+    $exifTool->SetNewValuesFromFile($file,
+        'Comment<ISO=$ISO Aperture=$aperture Exposure=$shutterSpeed');
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) File name, file reference, or scalar reference
+
+2-N) [optional] List of tag names to set.  All writable tags are set if none
+are specified.  The tag names are not case sensitive, and may be prefixed by
+an optional family 0 or 1 group name, separated by a colon (ie. 'exif:iso').
+A leading '-' indicates tags to be excluded (ie. '-comment').  An asterisk
+('*') may be used for the tag name, and is useful when a group is specified
+to set all tags from a group (ie. 'XMP:*').  A special feature allows tag
+names of the form 'SRCTAG>DSTTAG' (or 'DSTTAGE<lt>SRCTAG') to be specified
+to copy information to a tag with a different name or a specified group.
+Both 'SRCTAG' and 'DSTTAG' may use '*' and/or be prefixed by a group name
+(ie. 'modifyDate>fileModifyDate' or '*>xmp:*').  Copied tags may also be
+added or deleted from a list with arguments of the form 'SRCTAG+>DSTTAG' or
+'SRCTAG->DSTTAG'.  Tags are evaluated in order, so exclusions apply only to
+tags included earlier in the list.  An extension of this feature allows the
+tag value to be set from an expression containing tag names with leading '$'
+symbols (ie. 'CommentE<lt>Filename: $filename').  Braces '{}' may be used
+around the tag name to separate it from subsequent text, and a '$$' is used
+to to represent a '$' symbol.  (The behaviour for missing tags in
+expressions is defined by the L</MissingTagValue> option.)
+
+By default, this routine will commute information between same-named tags in
+different groups, allowing information to be translated between images with
+different formats.  This behaviour may be modified by specifying a group
+name for extracted tags (even if '*' is used as a group name), in which case
+the information is written to the original group, unless redirected to a
+different group.  (For example, a tag name of '*:*' may be specified to copy
+all information while preserving the original groups.)
+
+=item Return Values:
+
+A hash of information that was set successfully.  May include Warning or
+Error entries if there were problems reading the input file.
+
+=item Notes:
+
+The PrintConv option applies to this routine, but it normally should be left
+on to provide more reliable transfer of information between groups.
+
+If a preview image exists, it is not copied.  The preview image must be
+transferred separately if desired, in a separate call to L<WriteInfo>
+
+When simply copying all information between files of the same type, it is
+usually desirable to preserve the original groups by specifying '*:*' for
+the tags to set.
+
+=back
+
+=head2 GetNewValues
+
+Get list of new Raw values for the specified tag.  These are the values
+that will be written to file.  Only tags which support a 'List' may return
+more than one value.
+
+    $rawVal = $exifTool->GetNewValues($tag);
+
+    @rawVals = $exifTool->GetNewValues($tag);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Tag key or tag name
+
+=item Return Values:
+
+List of new Raw tag values.  The list may be empty if the tag is being
+deleted (ie. if SetNewValue was called without a value).
+
+=back
+
+=head2 CountNewValues
+
+Return the total number of new values set.
+
+    $numSet = $exifTool->CountNewValues();
+    ($numSet, $numPseudo) = $exifTool->CountNewValues();
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+=item Return Values:
+
+In scalar context, returns the total number of tags with new values set.  In
+list context, also returns the number of "pseudo" tag values which have been
+set.  "Pseudo" tags are tags like FileName and FileModifyDate which are not
+contained within the file and can be changed without rewriting the file.
+
+=back
+
+=head2 SaveNewValues
+
+Save state of new values to be later restored by L</RestoreNewValues>.
+
+    $exifTool->SaveNewValues();         # save state of new values
+    $exifTool->SetNewValue(ISO => 100); # set new value for ISO
+    $exifTool->WriteInfo($src, $dst1);  # write ISO + previous new values
+    $exifTool->RestoreNewValues();      # restore previous new values
+    $exifTool->WriteInfo($src, $dst2);  # write previous new values only
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+=item Return Value:
+
+None.
+
+=back
+
+=head2 RestoreNewValues
+
+Restore new values to the settings that existed when L</SaveNewValues> was
+last called.  May be called repeatedly after a single call to
+L</SaveNewValues>.  See L</SaveNewValues> above for an example.
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+=item Return Value:
+
+None.
+
+=back
+
+=head2 SetFileModifyDate
+
+Set the file modification time from the new value of the FileModifyDate tag.
+
+    $result = $exifTool->SetFileModifyDate($file);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) File name
+
+2) [optional] Base time if applying shift (days before $^T)
+
+=item Return Value:
+
+1 if the time was changed, 0 if nothing was done, or -1 if there was an
+error setting the time.
+
+=back
+
+=head2 SetFileName
+
+Set the file name and directory.  If not specified, the new file name is
+derived from the new values of the FileName and Directory tags.  If the
+FileName tag contains a '/', then the file is renamed into a new directory.
+If FileName ends with '/', then it is taken as a directory name and the file
+is moved into the new directory.  The new value for the Directory tag takes
+precedence over any directory specified in FileName.
+
+    $result = $exifTool->SetFileName($file);
+    $result = $exifTool->SetFileName($file, $newName);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Current file name
+
+2) [optional] New file name
+
+=item Return Value:
+
+1 if the file name or directory was changed, 0 if nothing was done, or -1 if
+there was an error renaming the file.
+
+=item Notes:
+
+Will not overwrite existing files. New directories are created as necessary.
+
+=back
+
+=head2 SetNewGroups
+
+Set the order of the preferred groups when adding new information.  In
+subsequent calls to L</SetNewValue>, new information will be created in the
+first valid group of this list.  This has an impact only if the group is not
+specified when calling L</SetNewValue> and if the tag name exists in more
+than one group.  The default order is EXIF, IPTC, XMP then MakerNotes.  Any
+family 0 group name may be used.  Case is not significant.
+
+    $exifTool->SetNewGroups('XMP','EXIF','IPTC');
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1-N) Groups in order of priority.  If no groups are specified, the priorities
+are reset to the defaults.
+
+=item Return Value:
+
+None.
+
+=back
+
+=head2 GetNewGroups
+
+Get current group priority list.
+
+    @groups = $exifTool->GetNewGroups();
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+=item Return Values:
+
+List of group names in order of write priority.  Highest priority first.
+
+=back
+
+=head2 GetTagID
+
+Get the ID for the specified tag.  The ID is the IFD tag number in EXIF
+information, the property name in XMP information, or the data offset in a
+binary data block. For some tags, such as Composite tags where there is no ID,
+an empty string is returned.
+
+    $id = $exifTool->GetTagID($tag);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Tag key
+
+=item Return Values:
+
+Tag ID or '' of there is no ID for this tag.
+
+=back
+
+=head2 GetDescription
+
+Get description for specified tag.  This function will always return a
+defined value.  In the case where the description doesn't exist, the tag
+name is returned.
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Tag key
+
+=item Return Values:
+
+A description for the specified tag.
+
+=back
+
+=head2 GetGroup
+
+Get group name for specified tag.
+
+    $group = $exifTool->GetGroup($tag, 0);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) Tag key
+
+2) [optional] Group family number
+
+=item Return Values:
+
+Group name (or 'Other' if tag has no group).  If no group family is
+specified, L</GetGroup> returns the name of the group in family 0 when
+called in scalar context, or the names of groups for all families in list
+context. See L</GetAllGroups [static]> for a list of groups in each famly.
+
+=back
+
+=head2 GetGroups
+
+Get list of group names for specified information.
+
+    @groups = $exifTool->GetGroups($info, 2);
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+1) [optional] Info hash ref (default is all extracted info)
+
+2) [optional] Group family number (default 0)
+
+=item Return Values:
+
+List of group names in alphabetical order. If information hash is not
+specified, the group names are returned for all extracted information.
+
+=back
+
+=head2 BuildCompositeTags
+
+Builds composite tags from required tags.  The composite tags are
+convenience tags which are derived from the values of other tags.  This
+routine is called automatically by L</ImageInfo> and L</ExtractInfo> if the
+Composite option is set.
+
+=over 4
+
+=item Inputs:
+
+0) ExifTool object reference
+
+=item Return Values:
+
+(none)
+
+=item Notes:
+
+Tag values are calculated in alphabetical order unless a tag Require's or
+Desire's another composite tag, in which case the calculation is deferred
+until after the other tag is calculated. Composite tags may need to read
+data from the image for their value to be determined, so for these
+L</BuildCompositeTags> must be called while the image is available.  This is
+only a problem if L</ImageInfo> is called with a filename (as opposed to a
+file reference or scalar reference) since in this case the file is closed
+before L</ImageInfo> returns.  However if you enable the Composite option,
+L</BuildCompositeTags> is called from within L</ImageInfo> before the file
+is closed.
+
+=back
+
+=head2 GetTagName [static]
+
+Get name of tag from tag key.  This is a convenience function that
+strips the embedded instance number, if it exists, from the tag key.
+
+Note: "static" in the heading above indicates that the function does not
+require an ExifTool object reference as the first argument.  All functions
+documented below are also static.
+
+    $tagName = Image::ExifTool::GetTagName($tag);
+
+=over 4
+
+=item Inputs:
+
+0) Tag key
+
+=item Return Value:
+
+Tag name.  This is the same as the tag key but has the instance number
+removed.
+
+=back
+
+=head2 GetShortcuts [static]
+
+Get a list of shortcut tags.
+
+=over 4
+
+=item Inputs:
+
+(none)
+
+=item Return Values:
+
+List of shortcut tags (as defined in Image::ExifTool::Shortcuts).
+
+=back
+
+=head2 GetAllTags [static]
+
+Get list of all available tag names.
+
+    @tagList = Image::ExifTool::GetAllTags($group);
+
+=over 4
+
+=item Inputs:
+
+0) [optional] Group name
+
+=item Return Values:
+
+A list of all available tags in alphabetical order, or all tags in specified
+group.  The group name is case insensitive, and any group in any family may
+be used except for EXIF family 1 groups (ie. the specific IFD).
+
+=back
+
+=head2 GetWritableTags [static]
+
+Get list of all writable tag names.
+
+    @tagList = Image::ExifTool::GetWritableTags($group);
+
+=over 4
+
+=item Inputs:
+
+0) [optional] Group name
+
+=item Return Values:
+
+A list of all writable tags in alphabetical order.  These are the tags for
+which values may be set through L</SetNewValue>.  If a group name is given,
+returns only writable tags in specified group.  The group name is case
+insensitive, and any group in any family may be used except for EXIF family
+1 groups (ie. the specific IFD).
+
+=back
+
+=head2 GetAllGroups [static]
+
+Get list of all group names in specified family.
+
+    @groupList = Image::ExifTool::GetAllGroups($family);
+
+=over 4
+
+=item Inputs:
+
+0) Group family number (0-2)
+
+=item Return Values:
+
+A list of all groups in the specified family in alphabetical order.
+
+=back
+
+Three families of groups are currently defined: 0, 1 and 2. Families 0 and 1
+are based on the file structure, and family 2 classifies information based
+on the logical category to which the information refers.
+
+Families 0 and 1 are similar except that family 1 is more specific, and
+sub-divides the EXIF, MakerNotes, XMP and ICC_Profile groups to give more
+detail about the specific location where the information was found.  The
+EXIF group is split up based on the specific IFD (Image File Directory), the
+MakerNotes group is divided into groups for each manufacturer, and the XMP
+group is separated based on the XMP namespace prefix.  Note that only common
+XMP namespaces are listed below but additional namespaces may be present in
+some XMP data.  Also note that the 'XMP-xmp...' group names may appear in
+the older form 'XMP-xap...' since these names evolved as the XMP standard
+was developed.  The ICC_Profile group is broken down to give information
+about the specific ICC_Profile tag from which multiple values were
+extracted.  As well, information extracted from the ICC_Profile header is
+separated into the ICC-header group.
+
+Here is a complete list of groups for each family:
+
+=over 4
+
+=item Family 0 (Information Type):
+
+AFCP, AIFF, APE, APP12, APP13, APP14, APP15, APP5, APP6, APP8, ASF, BMP,
+CanonVRD, Composite, DICOM, DNG, Ducky, EXIF, ExifTool, FLAC, File, Flash,
+FlashPix, FotoStation, GeoTiff, HTML, ICC_Profile, ID3, IPTC, ITC, JFIF,
+JPEG, Jpeg2000, Leaf, MIE, MIFF, MNG, MPC, MPEG, MakerNotes, Meta, PDF,
+PICT, PNG, PhotoMechanic, Photoshop, PostScript, PrintIM, QuickTime, RAF,
+RIFF, Real, SVG, SigmaRaw, Vorbis, XMP
+
+=item Family 1 (Specific Location):
+
+AFCP, AIFF, APE, ASF, Adobe, AdobeCM, BMP, Canon, CanonCustom, CanonRaw,
+CanonVRD, Casio, Composite, DICOM, DNG, Ducky, EPPIM, ExifIFD, ExifTool,
+FLAC, File, Flash, FlashPix, FotoStation, FujiFilm, GPS, GeoTiff,
+GlobParamIFD, GraphConv, HP, HTML, HTML-dc, HTML-ncc, HTML-prod, HTML-vw96,
+HTTP-equiv, ICC-chrm, ICC-clrt, ICC-header, ICC-meas, ICC-view, ICC_Profile,
+ID3, ID3v1, ID3v2_2, ID3v2_3, ID3v2_4, IFD0, IFD1, IPTC, ITC, InteropIFD,
+JFIF, JPEG, JVC, Jpeg2000, Kodak, KodakBordersIFD, KodakEffectsIFD,
+KodakIFD, KyoceraRaw, Leaf, LeafSubIFD, Leica, MAC, MIE-Audio, MIE-Camera,
+MIE-Doc, MIE-Extender, MIE-Flash, MIE-GPS, MIE-Geo, MIE-Image, MIE-Lens,
+MIE-Main, MIE-MakerNotes, MIE-Meta, MIE-Orient, MIE-Preview, MIE-Test,
+MIE-Thumbnail, MIE-UTM, MIE-Unknown, MIE-Video, MIFF, MNG, MPC, MPEG,
+MakerNotes, MakerUnknown, MetaIFD, Minolta, MinoltaRaw, Nikon, NikonCapture,
+NikonPreview, NikonScan, Olympus, PDF, PICT, PNG, Panasonic, Pentax,
+PhotoMechanic, Photoshop, PictureInfo, PostScript, PrintIM, ProfileIFD,
+QuickTime, RAF, RAF2, RIFF, RMETA, Real, Real-CONT, Real-MDPR, Real-PROP,
+Real-RA3, Real-RA4, Real-RA5, Real-RJMD, Ricoh, SPIFF, SR2, SR2DataIFD,
+SR2SubIFD, SRF#, SVG, Sanyo, Sigma, SigmaRaw, Sony, SubIFD, Track#, Vorbis,
+XMP, XMP-DICOM, XMP-PixelLive, XMP-aux, XMP-cc, XMP-crs, XMP-dc, XMP-dex,
+XMP-exif, XMP-iptcCore, XMP-lr, XMP-mediapro, XMP-microsoft, XMP-pdf,
+XMP-photomech, XMP-photoshop, XMP-plus, XMP-tiff, XMP-xmp, XMP-xmpBJ,
+XMP-xmpDM, XMP-xmpMM, XMP-xmpPLUS, XMP-xmpRights, XMP-xmpTPg
+
+=item Family 2 (Category):
+
+Audio, Author, Camera, Document, ExifTool, Image, Location, Other, Printing,
+Time, Unknown, Video
+
+=back
+
+=head2 GetDeleteGroups [static]
+
+Get list of all deletable group names.
+
+    @delGroups = Image::ExifTool::GetDeleteGroups();
+
+=over 4
+
+=item Inputs:
+
+None.
+
+=item Return Values:
+
+A list of deletable group names in alphabetical order.  The current list of
+deletable group names is:
+
+AFCP, CIFF, CanonVRD, EXIF, ExifIFD, Ducky, File, FlashPix, FotoStation,
+GlobParamIFD, GPS, IFD0, IFD1, InteropIFD, ICC_Profile, IPTC, JFIF,
+MakerNotes, Meta, MetaIFD, MIE, PhotoMechanic, Photoshop, PNG, PrintIM,
+RMETA, SubIFD, Trailer, XMP
+
+All names in this list are either family 0 or family 1 group names, with the
+exception of 'Trailer' which allows all trailers in JPEG and TIFF-format
+images to be deleted at once, including unknown trailers.  To schedule a
+group for deletion, call L</SetNewValue> with an undefined value and a tag
+name like 'Trailer:*'.
+
+=back
+
+=head2 GetFileType [static]
+
+Get type of file given file name.
+
+    my $type = Image::ExifTool::GetFileType($filename);
+    my $desc = Image::ExifTool::GetFileType($filename, 1);
+
+=over 4
+
+=item Inputs:
+
+0) [optional] File name (or just an extension)
+
+1) [optional]  Flag to return a description instead of a type
+
+=item Return Value:
+
+A string, based on the file extension, which represents the type of file.
+Returns undefined value if file type is not supported by ExifTool.  In array
+context, may return more than one file type if the file may be different
+formats.  Returns a list of extensions for all recognized file types if no
+input extension is specified.
+
+=back
+
+=head2 CanWrite [static]
+
+Can the specified file or file type be written?
+
+    my $writable = Image::ExifTool::CanWrite($filename);
+
+=over 4
+
+=item Inputs:
+
+0) File name, file extension, or file type
+
+=item Return Value:
+
+True if the specified file type can be written (edited).
+
+=back
+
+=head2 CanCreate [static]
+
+Can the specified file or file type be created?
+
+    my $creatable = Image::ExifTool::CanCreate($filename);
+
+=over 4
+
+=item Inputs:
+
+0) File name, file extension, or file type
+
+=item Return Value:
+
+True if the specified file type can be created from scratch.  Currently,
+this can only be done with XMP, MIE, ICC and VRD files.
+
+=back
+
+=head1 AUTHOR
+
+Copyright 2003-2008, Phil Harvey
+
+This library is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=head1 CREDITS
+
+Many people have helped in the development of ExifTool through their bug
+reports, comments and suggestions, and/or additions to the code.  See
+html/index.html in the Image::ExifTool distribution package for a list of
+people who have contributed to this project.
+
+=head1 SEE ALSO
+
+L<exiftool(1)|exiftool>,
+L<Image::ExifTool::TagNames(3pm)|Image::ExifTool::TagNames>,
+L<Image::ExifTool::Shortcuts(3pm)|Image::ExifTool::Shortcuts>,
+L<Image::ExifTool::Shift.pl|Image::ExifTool::Shift.pl>,
+L<Image::Info(3pm)|Image::Info>,
+L<Image::MetaData::JPEG(3pm)|Image::MetaData::JPEG>
+
+=cut
+
+# end
