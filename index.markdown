@@ -106,7 +106,7 @@ If the path pattern doesn't finish with a `/`, the last part of the path is supp
 
 File Clash avoiding
 -------------------
-<a id="clash"/>
+<a id="clash"></a>
 
 If the option _overwrite_ is not checked, the action will avoid replacing an existing file with a file it is renaming. The action has two choices then:
 - if the path pattern you specified uses the `:cnt:` special marker, it will replace this by a counter.
