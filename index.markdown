@@ -3,8 +3,8 @@ title: MetaDataMover Mac OS X Automator Action
 layout: default
 ---
 
- Principle
-================================
+Principle
+=========
 
 This is an  action for [Mac OS X Automator](http://www.apple.com/macosx/features/automator/) that takes a special path pattern and will try to rename the files it get in inputs according to that pattern.
 
@@ -16,106 +16,114 @@ Example of moving photos
 
 Let's make an example. The script supports the EXIF meta data field included in photo files by your camera. It can therefore use them to move the images.
 
-<doc3787|center>
+![Example Results](img/folder.png "Example Results")
+
 
 Let's say you have a bunch of images that you would want to move in directories named from the date they were taken at, like:
-- 2007
-    - 08
-        - 12
-            - IMG_1.jpg
-            - IMG_2.jpg
-    - 07
-        - 25
-            - IMG_3.jpg
-- 2006
-    - 01
-        - 28
-            - IMG_4.jpg
 
-You can set the path pattern parameter of the Automator action with the pattern: <code>%Y/%m/%d/</code>
+
+    2007
+       08
+         12
+           IMG_1.jpg
+           IMG_2.jpg
+	   07
+	     25
+           IMG_3.jpg
+    2006
+        01
+          28
+           IMG_4.jpg
+
+
+You can set the path pattern parameter of the Automator action with the pattern: `%Y/%m/%d/`
 
 The action will extract information from the EXIF data and replace the special markers in the pattern:
-- <code>%Y</code> will be replaced by the year
-- <code>%m</code> will be replaced by the month
-- <code>%d</code> will be replaced by the day
+- `%Y` will be replaced by the year
+- `%m` will be replaced by the month
+- `%d` will be replaced by the day
 
 the directory structure will be created and the file moved in the right directory.
 
 There is more detail later on how the patterns work, but this is the basic idea.
 
- Installation
-================================
+Installation
+============
 
 
-Download and open the following disk image. Check out the license and move the **MetaDataMove.action** file in the directory **~/Library/Automator/** (for a particular user) or **/Library/Automator/** (for all users)[[Create the directory if needed.]].
+Download and open the following [disk image](downloads/MetaDataMover.dmg.zip).
 
-<doc3811|center>
-Extract the archive and inside you will find _MetaDataMover.action_, move this file  in the directory **~/Library/Automator/** (for a particular user) or **/Library/Automator/** (for all users)[[Create the directory if needed.]].
+Check out the license and move the **MetaDataMove.action** file in the directory **~/Library/Automator/** (for a particular user) or **/Library/Automator/** (for all users)
+
+Extract the archive and inside you will find _MetaDataMover.action_, move this file  in the directory **~/Library/Automator/** (for a particular user) or **/Library/Automator/** (for all users)
 
 
 
- Using the Action
-================================
+Using the Action
+================
 
 Once installed, you will find the action in Automator under the _Finder_ application. Just drag and drop it in the workflow just after an action that returns a list of files.
 
 The action will return a list of the moved/renamed files.
 
 Here are the option:
-<img3789|center>
+
+![MetaDataMover screenshot](img/MetaDataMover.png)
+
 1- do you wish to copy or move the files, default is copy,
-2- what path pattern should be used. This is the pattern for the moving/renaming of the file. The default is for EXIF patterns: <code>%Y/%m/%d/</code>,
+2- what path pattern should be used. This is the pattern for the moving/renaming of the file. The default is for EXIF patterns: `%Y/%m/%d/`,
 3- in which root directory to put the new files. The path pattern will be applied from that directory. The default is the directory where the current file is,
 4- you can check this option and follow the action by the "View Results" action from Automator to do a test run,
-5- you can check this option if you are OK with the action overwriting existing file. The default is to not overwrite existing files, see <clash>.
+5- you can check this option if you are OK with the action overwriting existing file. The default is to not overwrite existing files, see [clash](#clash).
 
 
- Special Patterns Elements
-================================
+Special Patterns Elements
+=========================
 
 Most of the pattern -- except for the date notation in the EXIF case -- elements follow a simple notation, they are the name of a field in the file metadata with columns (':') around. You can use more than once the same marker in the pattern if you wish.
 
-The available meta data fields change according to the file type you are passing to the action. The main fields for photos, music files and PDF are discussed later. Generally, the action uses [ExifTool by Phil Harvey](http://www.sno.phy.queensu.ca/~phil/exiftool/) and therefore, the fields read by this tool can be used, for more details, please see [ExifTool tag names documentation](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/index.html].
+The available meta data fields change according to the file type you are passing to the action. The main fields for photos, music files and PDF are discussed later. Generally, the action uses [ExifTool by Phil Harvey](http://www.sno.phy.queensu.ca/~phil/exiftool/) and therefore, the fields read by this tool can be used, for more details, please see [ExifTool tag names documentation](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/index.html).
 
 The action also offers some basic pattern elements:
-- <code>:basename:</code> is the name of the file, without extensions,
-- <code>:ext:</code> is the extension of the file, with the period (<code>.</code>),
-- <code>:cnt:</code> will be replaced by the clash avoidance (see <clash>) counter if a file with the same name already exists, otherwise, it will just be removed.
+- `:basename:` is the name of the file, without extensions,
+- `:ext:` is the extension of the file, with the period (`.`),
+- `:cnt:` will be replaced by the clash avoidance (see [clash](#clash)) counter if a file with the same name already exists, otherwise, it will just be removed.
 
- Detailed Behaviour
-================================
+Detailed Behaviour
+==================
 
 Here are the specifics on how the action deals with the different possible cases.
 
 Trailing Slash
-------------------
+--------------
 
-If the path pattern finishes with a <code>/</code>, then it is taken as the directory where the file should be moved, without being renamed.
+If the path pattern finishes with a `/`, then it is taken as the directory where the file should be moved, without being renamed.
 
- File Renaming
-----------------
+File Renaming
+-------------
 
-If the path pattern doesn't finish with a <code>/</code>, the last part of the path is supposed to be the renaming pattern for the file. If it doesn't contain an extension (. followed by something), then the extension of the original file will be used.
+If the path pattern doesn't finish with a `/`, the last part of the path is supposed to be the renaming pattern for the file. If it doesn't contain an extension (. followed by something), then the extension of the original file will be used.
 
-File Clash avoiding <clash>
-------------------------------
+File Clash avoiding
+-------------------
+<a id="clash"/>
 
 If the option _overwrite_ is not checked, the action will avoid replacing an existing file with a file it is renaming. The action has two choices then:
-- if the path pattern you specified uses the <code>:cnt:</code> special marker, it will replace this by a counter.
+- if the path pattern you specified uses the `:cnt:` special marker, it will replace this by a counter.
 - otherwise, the action will add a counter at the end of the file name, just before the file extension.
 The action will start with the counter at 1 and try to write the file, if a file with the same counter already exist, it will increment the counter until it finds a new file name.
 
-------
+----------------------------------------------------------------------
 
- Introduction to Photo meta data
-================================
+Introduction to Photo meta data
+===============================
 
 &nbsp;
 
 EXIF Date Patterns
-------------------------------
+------------------
 
-The photo files containing EXIF metadata can use another special notation to extract the date when the photo was taken (as described in the previous example). The date pattern format is the one provided by the strftime tool. Check out [its man page for details](http://bama.ua.edu/cgi-bin/man-cgi?strftime+3C]. Here are useful fields:
+The photo files containing EXIF metadata can use another special notation to extract the date when the photo was taken (as described in the previous example). The date pattern format is the one provided by the strftime tool. Check out [its man page for details](http://bama.ua.edu/cgi-bin/man-cgi?strftime+3C). Here are useful fields:
 
 <table class="spip" summary="">
 <caption>Useful time/date formating</caption>
@@ -138,9 +146,9 @@ The photo files containing EXIF metadata can use another special notation to ext
 </table>
 
 EXIF Patterns Elements
-------------------------------
+----------------------
 
-You can also tell the tool to extract other [?EXIF] information by putting the EXIF field name between columns (<code>:</code>) in the pattern. For example, <code>%Y/%m/%d/:Model:/</code> will put the photos in subdirectories by date and then by model of camera.
+You can also tell the tool to extract other EXIF information by putting the EXIF field name between columns (`:`) in the pattern. For example, `%Y/%m/%d/:Model:/` will put the photos in subdirectories by date and then by model of camera.
 
 <table class="spip" summary="">
 <caption>Useful EXIF fields</caption>
@@ -154,10 +162,10 @@ You can also tell the tool to extract other [?EXIF] information by putting the E
 </tbody>
 </table>
 
-----------
+--------------------------------------------------------------------------------
 
- Introduction to Music files meta data
-================================
+Introduction to Music files meta data
+=====================================
 
 Most of the modern music file formats like mp3 support meta data fields to store the name of the track, the performing artist, etc... The action can extract these fields and can be used to organise a music collection automatically.
 
@@ -173,10 +181,10 @@ Most of the modern music file formats like mp3 support meta data fields to store
 </tbody>
 </table>
 
-----------
+--------------------------------------------------------------------------------
 
- Organising PDF Documents
-================================
+Organising PDF Documents
+========================
 
 You can also use the automator action to organise your pdf documents if they contain the right metadata. If the author of the file has tagged it with the right information, you can extract his name, etc... etc...
 
@@ -193,8 +201,8 @@ You can also use the automator action to organise your pdf documents if they con
 
 ---------
 
- Other file formats supported 
-================================
+Other file formats supported
+============================
 
 This automator action is based on the great ExifTool library. It will support all metadata format supported by that library. For details on each format and the tags availlable for that format, see the [exiftool tag names documentation page](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/index.html) or go directly to the format you are interested in from this list:
 - [JPEG](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/JPEG.html)
@@ -266,7 +274,7 @@ This automator action is based on the great ExifTool library. It will support al
 - [Shortcuts](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Shortcuts.html)
 
 
---------
+------------------------------------------------------------------------------
 
 Localisation
 ============
