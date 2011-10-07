@@ -1,8 +1,3 @@
----
-title: MetaDataMover Mac OS X Automator Action
-layout: default
----
-
 Principle
 =========
 
