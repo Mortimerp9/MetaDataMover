@@ -280,3 +280,28 @@ Localisation
 ============
 
 The script is already localised in _French_, _Italian_ and _English._ If you want to propose a new localisation, contact me.
+
+
+----------------------------------------------------------------------
+
+Credits
+=======
+
+This code uses ExifTool by Phil Harvey for all the metadata extraction:
+http://www.sno.phy.queensu.ca/~phil/exiftool/
+
+----------------------------------------------------------------------
+
+License
+=======
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+----------------------------------------------------------------------
